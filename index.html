@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>価値観診断 AI要約テスト | KACHIKAN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+            background: #f9fafb;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #374151;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 1.125rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .header .description {
+            font-size: 1rem;
+            color: #9ca3af;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue {
+            background: #dbeafe;
+        }
+
+        .card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .card-icon.blue svg {
+            color: #2563eb;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .card-title.blue {
+            color: #2563eb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-purple {
+            background: #9333ea;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background: #7e22ce;
+        }
+
+        .btn-green {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background: #15803d;
+        }
+
+        .btn-gray {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-gray:hover {
+            background: #4b5563;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        .btn-generate:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .btn-generate:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .matrix-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .matrix-label {
+            width: 160px;
+            font-size: 14px;
+            color: #374151;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+
+        .matrix-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            color: #374151;
+        }
+
+        .matrix-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .matrix-select:hover {
+            border-color: #93c5fd;
+        }
+
+        .result-box {
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+            line-height: 1.8;
+            color: #1e40af;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px;
+            color: #dc2626;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .matrix-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .matrix-label {
+                width: 100%;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            body {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KACHIKAN</h1>
+            <p class="subtitle">価値観診断 AI要約テスト</p>
+            <p class="description">9つの価値観マトリクスから総合プロファイルを生成</p>
+        </div>
+
+        <!-- 診断結果選択 -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon blue">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                </div>
+                <div class="card-title blue">診断結果を選択</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-purple" onclick="setSampleA()">🚀 サンプルA（リーダー型）</button>
+                <button class="btn btn-green" onclick="setSampleB()">💚 サンプルB（サポート型）</button>
+                <button class="btn btn-gray" onclick="setRandom()">🎲 ランダム</button>
+            </div>
+
+            <div id="matrixSelectors"></div>
+        </div>
+
+        <!-- 生成ボタン -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon blue">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div class="card-title blue">プロファイル生成</div>
+            </div>
+
+            <button class="btn btn-generate" id="generateBtn" onclick="generateProfile()">
+                ✨ AI で生成
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>生成中...</p>
+            </div>
+
+            <div class="error-box" id="errorBox"></div>
+
+            <div class="result-box" id="resultBox"></div>
+            <div class="char-count" id="charCount"></div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 KACHIKAN. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // マトリクスとタイプの定義
+        const MATRICES = [
+            { name: "向き合い方と関わり方", types: ["先導型チャレンジャー", "しなやかな推進者", "堅実型リーダー", "柔軟なチャレンジャー", "バランス型アジャスター", "堅実な調整者", "柔軟型チャレンジャー", "共感的な支え手", "支援型スタビライザー"] },
+            { name: "発想と進め方", types: ["構造的イノベーター", "構造化された柔軟派", "保守的エンジニア", "穏やかなアイデア提案者", "バランス型フレームワーカー", "安定志向の実践者", "自由奔放クリエイター", "しなやかな枠超え思考者", "柔軟型トラディショナリスト"] },
+            { name: "見せ方と中身", types: ["ストイックパフォーマー", "信頼される安定派", "道義的クラフター", "目的意識のある実行者", "調和を重んじる現実派", "丁寧なクラフター", "成果アピールプレイヤー", "魅せ方に長けた柔軟派", "共感重視の努力家"] },
+            { name: "自立と協働", types: ["オーナーシップ型実行者", "自律した安定型", "頼れるチームリーダー", "独立性ある調整者", "柔軟に関わる調整型", "協働を活かす安定派", "独立型コラボレーター", "協調性ある柔軟派", "共創型サポーター"] },
+            { name: "組織との関わり方", types: ["公明正大な協調者", "冷静な調整役", "自律的ジャスティスプレイヤー", "つながりを尊ぶ調整者", "調和志向の柔軟派", "自立した協調者", "共感的チームプレイヤー", "思いやりあるバランサー", "繊細な独立ワーカー"] },
+            { name: "スピードと裁量", types: ["即断即決ファイター", "柔軟に動ける実務派", "緻密なクラフトマスター", "スピード重視の調整役", "状況対応型オペレーター", "確実性を重んじる支援者", "スピード実行フォロワー", "安定志向のフォロワー", "几帳面な仕組み実行者"] },
+            { name: "判断の軸と視点", types: ["合理的マーケット志向", "論理的な調整型", "ロジカルプランナー", "対話を大切にする現場感覚派", "視座柔軟型バランサー", "全体最適を考える安定型", "共感型サービスマインド", "共感力ある柔軟派", "人間関係重視の組織人"] },
+            { name: "目的と見返り", types: ["成果還元型プロフェッショナル", "成果重視の現実派", "成果志向のセルフプレイヤー", "他者志向のバランス型", "動機の多様性を受け入れる柔軟型", "自律志向の柔軟派", "理想駆動型ミッションワーカー", "やりがい重視の柔軟派", "信念追求型クリエイター"] },
+            { name: "表現と伝え方", types: ["調和型サポーター", "気づかい上手な柔軟派", "共感的コミュニケーター", "控えめで調和的な実務派", "調和的メッセンジャー", "自分らしさを活かす柔軟派", "慎重な理性派ブレイン", "論理と共感のバランサー", "自信ある論理派プッシュ型"] }
+        ];
+
+        // 初期化：セレクトボックスを生成
+        function init() {
+            const container = document.getElementById('matrixSelectors');
+            MATRICES.forEach((matrix, i) => {
+                const row = document.createElement('div');
+                row.className = 'matrix-row';
+                
+                const label = document.createElement('span');
+                label.className = 'matrix-label';
+                label.textContent = matrix.name;
+                
+                const select = document.createElement('select');
+                select.className = 'matrix-select';
+                select.id = `matrix${i}`;
+                
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '選択してください';
+                select.appendChild(defaultOption);
+                
+                matrix.types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    select.appendChild(option);
+                });
+                
+                row.appendChild(label);
+                row.appendChild(select);
+                container.appendChild(row);
+            });
+        }
+
+        // サンプルA：リーダー型
+        function setSampleA() {
+            const values = [
+                "先導型チャレンジャー",
+                "自由奔放クリエイター",
+                "ストイックパフォーマー",
+                "オーナーシップ型実行者",
+                "自律的ジャスティスプレイヤー",
+                "即断即決ファイター",
+                "合理的マーケット志向",
+                "成果還元型プロフェッショナル",
+                "自信ある論理派プッシュ型"
+            ];
+            setSelections(values);
+        }
+
+        // サンプルB：サポート型
+        function setSampleB() {
+            const values = [
+                "共感的な支え手",
+                "穏やかなアイデア提案者",
+                "丁寧なクラフター",
+                "共創型サポーター",
+                "共感的チームプレイヤー",
+                "確実性を重んじる支援者",
+                "共感型サービスマインド",
+                "理想駆動型ミッションワーカー",
+                "調和型サポーター"
+            ];
+            setSelections(values);
+        }
+
+        // ランダム選択
+        function setRandom() {
+            const values = MATRICES.map(m => m.types[Math.floor(Math.random() * m.types.length)]);
+            setSelections(values);
+        }
+
+        // 選択値をセット
+        function setSelections(values) {
+            values.forEach((val, i) => {
+                document.getElementById(`matrix${i}`).value = val;
+            });
+        }
+
+        // 選択値を取得
+        function getSelections() {
+            return MATRICES.map((_, i) => document.getElementById(`matrix${i}`).value);
+        }
+
+        // プロファイル生成
+        async function generateProfile() {
+            const selections = getSelections();
+            
+            // バリデーション
+            if (selections.some(s => !s)) {
+                showError('全ての項目を選択してください');
+                return;
+            }
+            
+            // UI更新
+            hideError();
+            hideResult();
+            showLoading();
+            document.getElementById('generateBtn').disabled = true;
+            
+            // 診断データを構築
+            const diagnosis = selections.map((type, i) => ({
+                matrix: MATRICES[i].name,
+                type: type
+            }));
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ diagnosis })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                showResult(data.profile);
+                
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                hideLoading();
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        // UI ヘルパー関数
+        function showError(message) {
+            const box = document.getElementById('errorBox');
+            box.textContent = '⚠️ ' + message;
+            box.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorBox').classList.remove('show');
+        }
+
+        function showResult(text) {
+            const box = document.getElementById('resultBox');
+            box.textContent = text;
+            box.classList.add('show');
+            document.getElementById('charCount').textContent = `${text.length}文字`;
+        }
+
+        function hideResult() {
+            document.getElementById('resultBox').classList.remove('show');
+            document.getElementById('charCount').textContent = '';
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+
+        // 初期化実行
+        init();
+    </script>
+</body>
+</html>
