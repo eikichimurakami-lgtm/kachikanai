@@ -185,10 +185,11 @@ def generate_profile():
 
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("=" * 50)
     print("価値観診断 AI要約テスト サーバー")
     print("=" * 50)
-    print(f"URL: http://localhost:5000")
+    print(f"URL: http://localhost:{port}")
     print("Ctrl+C で終了")
     print("=" * 50)
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=port, debug=False)
